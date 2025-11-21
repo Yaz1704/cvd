@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'>
+<title>Healthy Heart Choices Game</title>
+<style>body{font-family:Arial,sans-serif;background:linear-gradient(to bottom right,#f5f0ff,#ffe6e6);text-align:center;padding:40px}
+h1{color:#6b0f1a}.scenario{background:#fff;padding:20px;border-radius:15px;box-shadow:0 4px 10px rgba(0,0,0,.2);max-width:600px;margin:20px auto}
+.choice{display:block;margin:10px auto;padding:10px 20px;font-size:16px;border:none;border-radius:10px;background:#b52b65;color:#fff;cursor:pointer}
+.choice:hover{background:#6b0f1a}#result{font-weight:700;margin-top:20px;font-size:18px}</style></head>
+<body><h1>Healthy Heart Choices Game</h1>
+<p>Make lifestyle choices to keep your heart healthy! Each decision affects your heart health score.</p>
+<div class='scenario' id='scenario'></div><div id='result'></div>
+<script>
+const scenarios=[
+ {text:'You wake up feeling tired. What do you do?',options:[{text:'Skip breakfast and grab a sugary coffee',score:-2},{text:'Eat a balanced breakfast with fruit and whole grains',score:2},{text:'Smoke a cigarette to wake up',score:-3}]},
+ {text:'It’s lunchtime at work.',options:[{text:'Order fast food with fries and soda',score:-2},{text:'Bring a homemade salad with lean protein',score:3},{text:'Skip lunch to keep working',score:-1}]},
+ {text:'After work, your friends invite you out.',options:[{text:'Go for a walk with them',score:3},{text:'Sit at home watching TV',score:-1},{text:'Go out drinking until late',score:-3}]},
+ {text:'You feel stressed about upcoming exams.',options:[{text:'Meditate or talk to a friend',score:2},{text:'Ignore it and eat junk food',score:-2},{text:'Smoke to calm down',score:-3}]}
+];
+let index=0,score=0;
+function showScenario(){if(index<scenarios.length){const s=scenarios[index];document.getElementById('scenario').innerHTML=`<h2>${s.text}</h2>`+s.options.map((o,i)=>`<button class='choice' onclick='choose(${i})'>${o.text}</button>`).join('')}else{showResult()}}
+function choose(i){score+=scenarios[index].options[i].score;index++;showScenario()}
+function showResult(){let m; if(score>=6)m='Excellent! Your choices show strong heart-healthy habits.'; else if(score>=2)m='Good job! You have mostly healthy habits with room for improvement.'; else m='Warning: Your lifestyle choices are putting your heart at risk.'; document.getElementById('scenario').innerHTML='<h2>Game Over</h2>'; document.getElementById('result').textContent=`Final Score: ${score} — ${m}`}
+showScenario();
+</script></body></html>

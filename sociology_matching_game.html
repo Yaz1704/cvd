@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'>
+<title>Sociology Matching Game – CVD Context</title>
+<style>:root{--bg1:#f7f3ff;--bg2:#ffe8ee;--card:#fff;--primary:#6b0f1a;--accent:#b52b65}
+body{font-family:Arial,Helvetica,sans-serif;margin:0;min-height:100vh;background:linear-gradient(135deg,var(--bg1),var(--bg2));display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:32px 16px}
+h1{margin:8px 0 4px;color:var(--primary);text-align:center}p.sub{margin:0 0 16px;color:#333;text-align:center}
+.hud{display:flex;gap:16px;margin:12px 0 20px;flex-wrap:wrap;justify-content:center}.badge{background:#fff;padding:8px 14px;border-radius:20px;box-shadow:0 3px 8px rgba(0,0,0,.12);font-weight:700;color:#222}
+.board{width:min(980px,96vw);display:grid;grid-template-columns:repeat(4,minmax(160px,1fr));gap:14px}.card{position:relative;height:120px;perspective:900px;cursor:pointer}
+.inner{position:absolute;inset:0;transition:transform .45s ease;transform-style:preserve-3d}.card.flipped .inner,.card.matched .inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:14px;box-shadow:0 6px 16px rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center;padding:10px;text-align:center}
+.front{background:linear-gradient(160deg,var(--accent),var(--primary));color:#fff;font-weight:700}.back{background:var(--card);transform:rotateY(180deg);border:2px solid #eee}.back .text{font-size:16px;line-height:1.25;color:#222}
+.controls{margin:20px 0;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}button{background:var(--accent);color:#fff;border:none;padding:10px 16px;border-radius:10px;font-size:15px;cursor:pointer}button:hover{background:var(--primary)}
+.footer{margin-top:16px;color:#333;font-size:14px;max-width:980px;text-align:center}@media (max-width:720px){.board{grid-template-columns:repeat(2,minmax(140px,1fr))}.card{height:110px}}</style></head>
+<body><h1>Sociology Matching Game</h1>
+<p class='sub'>Match each <b>theory/author</b> with its <b>key idea</b> in the context of Cardiovascular Disease.</p>
+<div class='hud'><div id='moves' class='badge'>Moves: 0</div><div id='time' class='badge'>Time: 0s</div><div id='found' class='badge'>Matches: 0/8</div></div>
+<div class='board' id='board'></div>
+<div class='controls'><button id='reset'>Reset</button><button id='shuffle'>Shuffle</button></div>
+<div class='footer'>Tips: Use this during your presentation to reinforce key concepts. Ask the class which cards to flip next and discuss why the pairs belong together.</div>
+<script>
+const PAIRS=[
+ {a:'Parsons (Structural Functionalism)',b:'Sick role: illness disrupts roles; expectation to seek care & recover'},
+ {a:'Marx (Conflict Theory)',b:'Class & power shape exposure to risk and access to care'},
+ {a:'Goffman',b:'Stigma & identity management in chronic illness'},
+ {a:'Conrad (Medicalization)',b:'Expansion of medical control over life & labeling behaviors as medical problems'},
+ {a:'Symbolic Interactionism',b:'Micro-level meanings: how patients interpret symptoms & illness'},
+ {a:'Structural Functionalism',b:'Social order maintained by roles; illness challenges stability'},
+ {a:'Feminist Theory',b:'Gender bias: underdiagnosis, caregiving burden, inequitable research'},
+ {a:'Social Determinants of Health',b:'Income, education, urbanization, stress shape CVD risk'}
+];
+let deck=[],first=null,second=null,lock=false,moves=0,matches=0,timer=null,seconds=0;
+function buildDeck(){const items=[];PAIRS.forEach((p,idx)=>{items.push({id:idx+'a',pair:idx,text:p.a});items.push({id:idx+'b',pair:idx,text:p.b})});return shuffle(items)}
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+function render(){const board=document.getElementById('board');board.innerHTML='';deck.forEach((card)=>{const el=document.createElement('div');el.className='card';el.dataset.id=card.id;el.dataset.pair=card.pair;el.innerHTML=`<div class="inner"><div class="face front">Flip</div><div class="face back"><div class="text">${card.text}</div></div></div>`;el.addEventListener('click',()=>flip(el));board.appendChild(el)})}
+function startTimer(){if(timer)clearInterval(timer);seconds=0;timer=setInterval(()=>{seconds++;document.getElementById('time').textContent='Time: '+seconds+'s'},1000)}
+function resetGame(){first=null;second=null;lock=false;moves=0;matches=0;deck=buildDeck();render();document.getElementById('moves').textContent='Moves: 0';document.getElementById('found').textContent='Matches: 0/8';document.getElementById('time').textContent='Time: 0s';startTimer()}
+function flip(el){if(lock||el.classList.contains('flipped')||el.classList.contains('matched'))return;el.classList.add('flipped');if(!first){first=el;return}second=el;lock=true;moves++;document.getElementById('moves').textContent='Moves: '+moves;checkMatch()}
+function checkMatch(){const a=first.dataset.pair,b=second.dataset.pair;if(a===b){first.classList.add('matched');second.classList.add('matched');matches++;document.getElementById('found').textContent='Matches: '+matches+'/8';[first,second]=[null,null];lock=false;if(matches===PAIRS.length){clearInterval(timer);setTimeout(()=>{alert('Great job! You matched all pairs in '+moves+' moves and '+seconds+' seconds.')},300)}}else{setTimeout(()=>{first.classList.remove('flipped');second.classList.remove('flipped');[first,second]=[null,null];lock=false},800)}}
+document.getElementById('reset').addEventListener('click',resetGame);document.getElementById('shuffle').addEventListener('click',resetGame);resetGame();
+</script></body></html>
